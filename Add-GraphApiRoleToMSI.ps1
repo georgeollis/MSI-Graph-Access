@@ -24,9 +24,9 @@ function Add-GraphApiRoleToMSI {
         $spList = (Invoke-RestMethod @msiParams).Value
         $msiId = ($spList | Where-Object { $_.displayName -eq $applicationName }).Id
         $graphId = ($spList | Where-Object { $_.appId -eq $graphAppId }).Id
-        $msiItem = Invoke-RestMethod @msiParams -Uri "$($baseUri)/$($msiId)?`$expand=appRoleAssignments"
+        $msiItem = Invoke-RestMethod -Method $msiParams.Method -Headers $msiParams.Headers -Uri "$($baseUri)/$($msiId)?`$expand=appRoleAssignments"
 
-        $graphRoles = (Invoke-RestMethod @msiParams -Uri "$baseUri/$($graphId)/appRoles").Value | 
+        $graphRoles = (Invoke-RestMethod -Method $msiParams.Method -Headers $msiParams.Headers -Uri "$baseUri/$($graphId)/appRoles").Value | 
         Where-Object {$_.value -in $GraphApiRole -and $_.allowedMemberTypes -Contains "Application"} |
         Select-Object allowedMemberTypes, id, value
         foreach ($roleItem in $graphRoles) {
